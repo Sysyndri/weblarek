@@ -98,21 +98,32 @@ Presenter - презентер содержит основную логику п
 `emit<T extends object>(event: string, data?: T): void` - инициализация события. При вызове события в метод передается название события и объект с данными, который будет использован как аргумент для вызова обработчика.  
 `trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void` - возвращает функцию, при вызове которой инициализируется требуемое в параметрах событие с передачей в него данных из второго параметра.
 
+### Данные
 
-#### Класс CatalogOfMain
+#### Интерфейс ProductItem
+Интерфейс для учета товаров которые будут использоватся в приложении
+
+#### Интерфейс Customer
+Интерфейс для хранения данных покупателей
+
+### Моделях данных
+
+#### Класс MainCatalog
 Содержит в себе логику работы с карточками на главной странице их сохраение и получение
 
-Конструктор класса не принимает параметров
+Конструктор:
+`constructor(products: ProductItem[], currentCard: ProductItem)` - В конструктор передается массив всех товаров и выбранный товар
 
 Поля класса:
 `_products: ProductItem[]` - Хранит массив карточек товаров
-`_currentCard: ProductItem` - Хранит выбранную карточку на главной странице
+`_currentCard: ProductItem` - хранит товар, выбранный для подробного отображения
 
 Методы класса: 
-`get products: ProductItem[]` - Позволяет получить список товаров вне класса
-`set saveProducts(products: ProductItem[]): none` - Позволяет сохранить массив карточек в класс
-`get card: ProductItem` - Позволяет получить выбранную карточку вне класса
-`set card(item: ProductItem): none` - Позволяет сохранить выбранную карточку в класс
+`get products: ProductItem[]` - получение массива товаров из модели
+`set saveProducts(products: ProductItem[]): none` - сохранение массива товаров полученного в параметрах метода
+`getProduct: ProductItem` - получение одного товара по его id
+`get card: ProductItem` - получение товара для подробного отображения
+`set card(item: ProductItem): none` - сохранение товара для подробного отображения
 
 #### Класс ProductBascet
 Содержит в себе логику работы корзины товаров
@@ -124,32 +135,32 @@ Presenter - презентер содержит основную логику п
 `_saveProducts: ProductItem[]` - Хранит массив товаров сохраненых в корзине
 
 Методы класса:
-`set addProduct(product: ProductItem): none` -Позволяет добавить товвар в корзину 
-`delProduct(id: string): string` - Позваляет удалить товар из корзины
-`countProducts: number` - Позволяет получить количество товаров в корзине
-`get products: ProductItem[]` - Позволяет получить список товаров из корзины
-`sumProtuctsPrice: number` - Позволяет получить сумму стоимости товаров в корзине
-`checkProduct: boolean` - Позволяет узнать есть товар в корзине или нет
+`set addProduct(product: ProductItem): none` - добавление товара, который был получен в параметре, в массив корзины 
+`delProduct(id: string): string` - удаление товара, полученного в параметре из массива корзины
+`countProducts: number` - получение количества товаров в корзине
+`get products: ProductItem[]` - получение массива товаров, которые находятся в корзине
+`sumProtuctsPrice: number` - получение стоимости всех товаров в корзине
+`checkProduct(id: string): boolean` - проверка наличия товара в корзине по его id, полученного в параметр метода
+`clearBascet: string` - очистка корзины
 
-#### Класс Shopper
+#### Класс Buyer
 Содержит в себе логику работы с данными покупателя
 
 Конструктор:
-`constructor(payment: 'card' | 'cash'| '', address: string, email: string, phone: string)` - В конструктор передается данные покупателя(платежная информация, адресс, адресс почты, номер телефона)
+`constructor(payment: TPayment, address: string, email: string, phone: string)` - В конструктор передается данные покупателя(платежная информация, адресс, адресс почты, номер телефона)
 
 Поля класса:
-`_payment: 'card' | 'cash' | ''` - платежная информация покупателя
+`_payment: TPayment` - платежная информация покупателя
 `_address: string` - адресс покупателя
 `_email: string` - адресс почты покупателя
 `_phone: string` - номер телефона покупателя
 
 Методы класса:
-`checkData: boolean` - Позволяет проверить корректность данных пользователя
-`get shopperData: Customer` - Позволяет получить данные о покупателе
-`set newShopperData(payment?: 'card' | 'cash'| '', address?: string, email?: string, phone?: string)` - Позволяет изменить и сохранить новые данные пользователя
+`checkData: errorObj` - валидация данных
+`get shopperData: IBuyer` - получение всех данных покупателя
+`newShopperData(payment?: TPayment, address?: string, email?: string, phone?: string): void` - Позволяет изменить и сохранить новые данные пользователя
+`clearBuyer: string` - очистка данных покупателя
 
-#### Интерфейс ProductItem
-Интерфейс для учета товаров которые будут использоватся в приложении
 
-#### Интерфейс Customer
-Интерфейс для хранения данных покупателей
+
+
