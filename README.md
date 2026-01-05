@@ -112,33 +112,33 @@ Presenter - презентер содержит основную логику п
 Содержит в себе логику работы с карточками на главной странице их сохраение и получение
 
 Конструктор:
-`constructor(products: ProductItem[], currentCard: ProductItem)` - В конструктор передается массив всех товаров и выбранный товар
+`constructor(products: IProduct[], currentCard: IProduct)` - В конструктор передается массив всех товаров и выбранный товар
 
 Поля класса:
-`_products: ProductItem[]` - Хранит массив карточек товаров
-`_currentCard: ProductItem` - хранит товар, выбранный для подробного отображения
+`_products: IProduct[]` - Хранит массив карточек товаров
+`_currentCard: IProduct` - хранит товар, выбранный для подробного отображения
 
 Методы класса: 
-`get products: ProductItem[]` - получение массива товаров из модели
-`set saveProducts(products: ProductItem[]): none` - сохранение массива товаров полученного в параметрах метода
-`getProduct: ProductItem` - получение одного товара по его id
-`get card: ProductItem` - получение товара для подробного отображения
-`set card(item: ProductItem): none` - сохранение товара для подробного отображения
+`get products: IProduct[]` - получение массива товаров из модели
+`saveProducts(products: IProduct[]): none` - сохранение массива товаров полученного в параметрах метода
+`getProduct(id: string): IProduct` - получение одного товара по его id
+`get card: IProduct` - получение товара для подробного отображения
+`set card: IProduct` - сохранение товара для подробного отображения
 
-#### Класс ProductBascet
+#### Класс ProductBasket
 Содержит в себе логику работы корзины товаров
 
 Конструктор:  
-`constructor(savePoducts: ProductItem[] | [])` - В конструктор передается массив карточек товаров или пустой массив для инициализации
+`constructor(saveProducts: IProduct[] | [])` - В конструктор передается массив карточек товаров или пустой массив для инициализации
 
 Поля класса:
-`_saveProducts: ProductItem[]` - Хранит массив товаров сохраненых в корзине
+`_saveProducts: IProduct[]` - Хранит массив товаров сохраненых в корзине
 
 Методы класса:
-`set addProduct(product: ProductItem): none` - добавление товара, который был получен в параметре, в массив корзины 
+`addProduct(product: IProduct): void` - добавление товара, который был получен в параметре, в массив корзины 
 `delProduct(id: string): string` - удаление товара, полученного в параметре из массива корзины
 `countProducts: number` - получение количества товаров в корзине
-`get products: ProductItem[]` - получение массива товаров, которые находятся в корзине
+`get products: IProduct[]` - получение массива товаров, которые находятся в корзине
 `sumProtuctsPrice: number` - получение стоимости всех товаров в корзине
 `checkProduct(id: string): boolean` - проверка наличия товара в корзине по его id, полученного в параметр метода
 `clearBascet: string` - очистка корзины

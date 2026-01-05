@@ -3,7 +3,7 @@ import { errorObj, IBuyer, TPayment } from "../../types";
 /**
  * Класс модели данных отвечающий за хранение данных пользователя и ее валидацию
  */
-export class Buyer implements IBuyer {
+export class Buyer{
 
   constructor(
     protected _payment: TPayment, 
@@ -11,12 +11,6 @@ export class Buyer implements IBuyer {
     protected _email: string,
     protected _phone: string,
   ) {}
-
-  get payment(): TPayment {return this._payment}
-  get address(): string {return this._address}
-  get email(): string {return this._email}
-  get phone(): string {return this._phone}
-
 
   /**
    * Позволяет получить все данные пользователя
