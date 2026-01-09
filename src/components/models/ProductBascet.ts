@@ -82,11 +82,11 @@ export class ProductBasket {
    */
   checkProduct(id: string): boolean {
 
-    this._saveProducts.forEach((item: IProduct) => {
+    for (let item of this._saveProducts) {
       if (item.id === id) {
         return true
       }
-    })
+    }
 
     return false
   }

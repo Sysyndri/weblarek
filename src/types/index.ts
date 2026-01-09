@@ -2,11 +2,11 @@ export type TPayment = 'card' | 'cash' | '' | null;
 
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
-export type errorObj = {
-    payment: string;
-    address: string;
-    email: string;
-    phone: string;
+export type ValidationErrors = {
+    payment?: string;
+    address?: string;
+    email?: string;
+    phone?: string;
 }
 
 export interface IApi {

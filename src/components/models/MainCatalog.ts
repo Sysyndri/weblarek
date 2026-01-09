@@ -4,7 +4,9 @@ import { IProduct } from "../../types";
  * Класс отвечающий за каталог на гллавной странице, хранение товаров и взаимодействие с ними
  */
 export class MainCatalog {
-  constructor(protected _products: IProduct[], protected _currentCard: IProduct) {}
+
+  protected _products: IProduct[] = [];
+  protected _currentCard: IProduct = this._products[0];
 
   /**
    * Метод для получения массива продуктов

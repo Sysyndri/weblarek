@@ -1,4 +1,4 @@
-import { errorObj, IBuyer, TPayment } from "../../types";
+import { IBuyer, TPayment, ValidationErrors } from "../../types";
 
 /**
  * Класс модели данных отвечающий за хранение данных пользователя и ее валидацию
@@ -61,32 +61,27 @@ export class Buyer{
    * @returns возвращает ошибки обьект с ошибками если они есть, 
    * если нет, то возвращает обьект с коректным заполнением
    */
-  checkData(): errorObj {
+  checkData(): ValidationErrors {
 
-    const erors: errorObj = {
-      "payment": 'Заполненно верно',
-      "address": 'Заполненно верно',
-      'email': 'Заполненно верно',
-      'phone': 'Заполненно верно',
-    }
+    const errors: ValidationErrors = {};
 
     if (!this._payment) {
-      erors.payment = 'Не выбран способ оплаты';
+      errors.payment = 'Не выбран способ оплаты';
     }
 
     if (!this._address?.trim()) {
-      erors.address = 'Укажите адресс доставки';
+      errors.address = 'Укажите адресс доставки';
     }
 
     if (!this._email?.trim()) {
-      erors.email = 'Укажите ваш email'
+      errors.email = 'Укажите ваш email'
     }
 
     if (!this._phone?.trim()) {
-      erors.phone = 'Укажите ваш номер телефона'
+      errors.phone = 'Укажите ваш номер телефона'
     }
 
-    return erors
+    return errors
   }
 
 }
