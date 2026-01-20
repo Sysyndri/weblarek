@@ -25,19 +25,16 @@ export class ProductBasket {
    */
   delProduct(id: string): string {
 
-    let index: number = 0;
     let result: string = `Товар с id = ${id} - не найден`;
 
     this._saveProducts.forEach((item: IProduct, ind: number) => {
       if (item.id === id) {
         result = `Товар ${item.title} удалён из корзины`
-        index = ind
+
+        this._saveProducts.splice(ind, 1);
+        return result
       }
     })
-
-    if (index) {
-      this._saveProducts.splice(index, 1);
-    }
 
     return result
   }

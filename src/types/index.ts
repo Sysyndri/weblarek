@@ -2,6 +2,11 @@ export type TPayment = 'card' | 'cash' | '' | null;
 
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
+export type AplResponseList<Type> = {
+    total: number,
+    items: Type[],
+}
+
 export type ValidationErrors = {
     payment?: string;
     address?: string;

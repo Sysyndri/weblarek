@@ -100,11 +100,34 @@ Presenter - презентер содержит основную логику п
 
 ### Данные
 
-#### Интерфейс ProductItem
-Интерфейс для учета товаров которые будут использоватся в приложении
+#### Тип TPayment
+Тип для типизации получаемых в интерфейсе IBuyer.payment данных
+`'card' | 'cash' | '' | null`
 
-#### Интерфейс Customer
+#### Тип ApiPostMethods
+Тип для типизации запросов которые может выполнять Api
+`'POST' | 'PUT' | 'DELETE'`
+
+#### Тип AplResponseList
+Тип для типизации получаемого ответа от запроса к серверу
+`total: number, items: Type[]`
+
+#### Тип ValidationErrors
+Тип для типизации получаемых ошибок в классе Buyer
+`payment?: string; address?: string; email?: string; phone?: string;`
+
+#### Интерфейс IApi 
+Интерфейс для типизации Api класса
+`get<T extends object>(uri: string): Promise<T>; post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;`
+
+#### Интерфейс IProduct
+Интерфейс для учета товаров которые будут использоватся в приложении
+`id: string; title: string; image: string; category: string price: number | null; description: string`
+
+#### Интерфейс IBuyer
 Интерфейс для хранения данных покупателей
+`payment: TPayment; address: string; email: string; phone: string;`
+
 
 ### Модели данных
 
@@ -164,16 +187,14 @@ Presenter - презентер содержит основную логику п
 
 ### Слой коммуникации
 
-#### Класс ApiResponse
+#### Класс ApiClient
 Этот класс будет использовать композицию, чтобы выполнить запрос на сервер с помощью метода get класса Api и будет получать с сервера объект с массивом товаров.
 
 
 Конструктор:
-`constructor(dataObj: IApi)` - В конструктор передается 
-
-Поля класса:
-`_api: Api` - Композиция класса Api
+`constructor(baseurl: string, options?: RequestInit)` - В конструктор передается базовый url и зашоловки запроса, если они есть
 
 Методы класса: 
-`get(url: string): Promise` - Метод для получения товаров по запросу
-`post(url: string, data: object, method: ApiPostMethods = 'POST')` - Метод чтобы класс мог отправлять на сервер данные о покупателе и выбранных товарах
+`getProductCards(url: string = '/product'): Promise<IProduct[]>` - Метод для получения товаров по запросу
+
+`postOrder(url: string = '/order', data: object, method: ApiPostMethods = 'POST')` - Метод чтобы класс мог отправлять на сервер данные о покупателе и выбранных товарах

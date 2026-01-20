@@ -58,10 +58,10 @@ export class Buyer{
   
   /**
    * Проверяет данные пользователя на правильность заполнения
-   * @returns возвращает ошибки обьект с ошибками если они есть, 
-   * если нет, то возвращает обьект с коректным заполнением
+   * @returns возвращает обьект с ошибками если они есть, 
+   * если нет, то возвращает boolean - true
    */
-  checkData(): ValidationErrors {
+  checkData(): ValidationErrors | boolean {
 
     const errors: ValidationErrors = {};
 
@@ -81,7 +81,11 @@ export class Buyer{
       errors.phone = 'Укажите ваш номер телефона'
     }
 
-    return errors
+    if (Object.keys(errors).length !== 0) {
+      return errors
+    } 
+
+    return true
   }
 
 }
