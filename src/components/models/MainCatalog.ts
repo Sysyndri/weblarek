@@ -5,8 +5,8 @@ import { IProduct } from "../../types";
  */
 export class MainCatalog {
 
-  protected _products: IProduct[] = [];
-  protected _currentCard: IProduct = this._products[0];
+  private _products: IProduct[] = [];
+  private _currentCard: IProduct = this._products[0];
 
   /**
    * Метод для получения массива продуктов

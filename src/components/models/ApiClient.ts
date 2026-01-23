@@ -1,26 +1,33 @@
-import { ApiPostMethods, AplResponseList, IProduct } from "../../types";
+import { ApiPostMethods, AplResponseList, IProduct, PostAnswer } from "../../types";
+import { API_URL } from "../../utils/constants";
 import { Api } from "../base/Api";
 
 
 export class ApiClient extends Api {
 
-    constructor(baseurl: string, options?: RequestInit) {
-        super(baseurl, options)
+    constructor() {
+        super(API_URL);
     }
 
-
-    async getProductCards(url:string = '/product'): Promise<IProduct[]> {
-        const response: AplResponseList<IProduct> = await this.get(url)
-
-        if (!response.items|| !Array.isArray(response.items)) {
-            throw new Error("Неккоректный формат ответа, отсутсвует поле items")
-        }
+    /**
+     * Метод для получения карточек товара по эндпоинту - /product
+     * при помощи класса Api
+     * @returns - Возвращает ответ от сервера
+     */
+    async getProductCards(): Promise<IProduct[]> {
+        const response = await this.get<AplResponseList<IProduct>>('/product')
 
         return response.items;
-
     }
 
-    async postOrder(url: string = '/order', data: object, method: ApiPostMethods = 'POST') {
-        return this.post(url, data, method);
+    /**
+     * Метод для отправки данных на сервер по эндпоинту - /order
+     * при помощи класса Api
+     * @param data - Данные которые нужно передать
+     * @param method - Метод запроса на сервер
+     * @returns - Возвращает ответ серверка
+     */
+    async postOrder(data: object, method: ApiPostMethods = 'POST'): Promise<PostAnswer> {
+        return this.post<Promise<PostAnswer>>('/order', data, method);
     }
 }

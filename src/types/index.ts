@@ -2,6 +2,11 @@ export type TPayment = 'card' | 'cash' | '' | null;
 
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
+export type PostAnswer = {
+    id: string,
+    total: number
+}
+
 export type AplResponseList<Type> = {
     total: number,
     items: Type[],

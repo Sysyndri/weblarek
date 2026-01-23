@@ -4,13 +4,13 @@ import { IBuyer, TPayment, ValidationErrors } from "../../types";
  * Класс модели данных отвечающий за хранение данных пользователя и ее валидацию
  */
 export class Buyer{
+  
+  private _payment: TPayment = ''; 
+  private _address: string = ''; 
+  private _email: string = '';
+  private _phone: string = '';
 
-  constructor(
-    protected _payment: TPayment, 
-    protected _address: string, 
-    protected _email: string,
-    protected _phone: string,
-  ) {}
+
 
   /**
    * Позволяет получить все данные пользователя
@@ -33,12 +33,7 @@ export class Buyer{
    * @param email - емаил пользователя
    * @param phone - телефон пользователя
    */
-  newShopperData(
-    payment?: TPayment, 
-    address?: string, 
-    email?: string, 
-    phone?: string
-  ): void 
+  setNewShopperData({payment, address, email, phone}: Partial<IBuyer>): void 
   {
     this._payment = payment ?? this._payment;
     this._address = address ?? this._address;
