@@ -1,12 +1,11 @@
-import { ApiPostMethods, AplResponseList, IProduct, PostAnswer } from "../../types";
-import { API_URL } from "../../utils/constants";
+import { ApiPostMethods, AplResponseList, IProduct, PostAnswer, PostData } from "../../types";
 import { Api } from "../base/Api";
 
 
 export class ApiClient extends Api {
 
-    constructor() {
-        super(API_URL);
+    constructor(baseurl: string, options?: RequestInit) { 
+        super(baseurl, options);
     }
 
     /**
@@ -27,7 +26,7 @@ export class ApiClient extends Api {
      * @param method - Метод запроса на сервер
      * @returns - Возвращает ответ серверка
      */
-    async postOrder(data: object, method: ApiPostMethods = 'POST'): Promise<PostAnswer> {
+    async postOrder(data: PostData, method: ApiPostMethods = 'POST'): Promise<PostAnswer> {
         return this.post<Promise<PostAnswer>>('/order', data, method);
     }
 }

@@ -66,12 +66,7 @@ export class ProductBasket {
    * @returns - возвращает true - если товар найден и удален и false если нет
    */
   checkProduct(id: string): boolean {
-
-    if (this._saveProducts.some(item => item.id === id)) {
-      return true
-    }
-
-    return false
+    return this._saveProducts.some(item => item.id === id)
   }
 
   /**

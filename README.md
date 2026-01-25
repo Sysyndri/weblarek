@@ -121,12 +121,16 @@ Presenter - презентер содержит основную логику п
 `get<T extends object>(uri: string): Promise<T>; post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;`
 
 #### Интерфейс IProduct
-Интерфейс для учета товаров которые будут использоватся в приложении
+Интерфейс для типизации товаров которые будут использоватся в приложении
 `id: string; title: string; image: string; category: string price: number | null; description: string`
 
 #### Интерфейс IBuyer
-Интерфейс для хранения данных покупателей
+Интерфейс для типизации данных покупателей
 `payment: TPayment; address: string; email: string; phone: string;`
+
+#### Интерфейс PostData
+Интерфейс для типизации данных отправляемых на сервер
+`items: string[]; total: number;`
 
 
 ### Модели данных

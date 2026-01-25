@@ -12,6 +12,11 @@ export type AplResponseList<Type> = {
     items: Type[],
 }
 
+export interface PostData extends IBuyer{
+    items: string[];
+    total: number;
+}
+
 export type ValidationErrors = {
     payment?: string;
     address?: string;

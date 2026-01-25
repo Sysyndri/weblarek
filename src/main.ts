@@ -4,9 +4,10 @@ import { MainCatalog } from './components/models/MainCatalog';
 import { ProductBasket } from './components/models/ProductBascet';
 import './scss/styles.scss';
 import { IProduct } from './types';
+import { API_URL } from './utils/constants';
 
 // Проверка Api
-const api = new ApiClient()
+const api = new ApiClient(API_URL)
 
 const dataCatalog =  await api.getProductCards()
 
