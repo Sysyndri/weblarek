@@ -1,4 +1,5 @@
 import { IProduct } from "../../types";
+import { IEvents } from "../base/Events";
 
 
 /**
@@ -8,12 +9,15 @@ export class ProductBasket {
 
   private _saveProducts: IProduct[] = []
 
+  constructor(protected event: IEvents) {}
+
   /**
    * Метод для добавление товаров в корзину
    * @param product - товар который нужно доабавить в корзину
    */
   addProduct(product: IProduct): void{
-    this._saveProducts.push(product)
+    this._saveProducts.push(product);
+    this.event.emit('basket:change');
   }
 
   /**
@@ -21,16 +25,16 @@ export class ProductBasket {
    * @param id - id товара который нужно удалить
    * @returns возвращает информационное сообщение об удлаление или об отсутствии товара
    */
-  delProduct(id: string): string {
+  delProduct(id: string) {
 
     const index = this._saveProducts.findIndex(item => item.id === id)
 
     if (index !== -1){
       this._saveProducts.splice(index, 1);
-      return `Товар ${this._saveProducts[index].title} удалён из корзины`
     }
+    
+    this.event.emit('basket:change')
 
-    return `Товар с id = ${id} - не найден`;
   }
 
   /**
@@ -75,6 +79,7 @@ export class ProductBasket {
    */
   clearBascet(): string {
     this._saveProducts = []
+    this.event.emit('basket:change')
 
     return 'Корзина успешно очищена!'
   }

@@ -12,16 +12,11 @@ export type AplResponseList<Type> = {
     items: Type[],
 }
 
-export interface PostData extends IBuyer{
-    items: string[];
-    total: number;
-}
-
 export type ValidationErrors = {
-    payment?: string;
-    address?: string;
-    email?: string;
-    phone?: string;
+    payment: string | null;
+    address: string | null;
+    email: string | null;
+    phone: string | null;
 }
 
 export interface IApi {
@@ -43,4 +38,13 @@ export interface IBuyer {
     address: string;
     email: string;
     phone: string;
+}
+
+export interface ICardAction {
+    onClick?: () => void;
+}
+
+export type PostData = IBuyer & {
+    items: string[];
+    total: number;
 }

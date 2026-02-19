@@ -1,4 +1,5 @@
 import { IProduct } from "../../types";
+import { IEvents } from "../base/Events";
 
 /**
  * Класс отвечающий за каталог на гллавной странице, хранение товаров и взаимодействие с ними
@@ -7,6 +8,8 @@ export class MainCatalog {
 
   private _products: IProduct[] = [];
   private _currentCard: IProduct = this._products[0];
+
+  constructor(protected event: IEvents) {}
 
   /**
    * Метод для получения массива продуктов
@@ -20,6 +23,7 @@ export class MainCatalog {
    */
   set saveProducts(product: IProduct[]) {
     this._products = product;
+    this.event.emit('catalog:change');
   }
 
   /**

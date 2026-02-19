@@ -1,4 +1,5 @@
 import { IBuyer, TPayment, ValidationErrors } from "../../types";
+import { IEvents } from "../base/Events";
 
 /**
  * Класс модели данных отвечающий за хранение данных пользователя и ее валидацию
@@ -10,6 +11,8 @@ export class Buyer{
   private _email: string = '';
   private _phone: string = '';
 
+
+    constructor(protected event: IEvents) {}
 
 
   /**
@@ -39,6 +42,14 @@ export class Buyer{
     this._address = address ?? this._address;
     this._email = email ?? this._email;
     this._phone = phone ?? this._phone;
+
+    if (payment || address) {
+      this.event.emit('buyer:change', this.shopperData)
+    }
+
+    if (email || phone) {
+      this.event.emit('contact:change', this.shopperData)
+    }
   }
 
   /**
@@ -49,16 +60,22 @@ export class Buyer{
     this._address = '';
     this._email = '';
     this._phone = '';
+    this.event.emit('buyer:change', this.shopperData)
+    this.event.emit('contact:change', this.shopperData)
   }
   
   /**
    * Проверяет данные пользователя на правильность заполнения
-   * @returns возвращает обьект с ошибками если они есть, 
-   * если нет, то возвращает boolean - true
+   * @returns возвращает обьект с ошибками
    */
-  checkData(): ValidationErrors | boolean {
+  checkData(): ValidationErrors{
 
-    const errors: ValidationErrors = {};
+    const errors: ValidationErrors = {
+      payment: null,
+      email: null,
+      phone: null,
+      address: null
+    };
 
     if (!this._payment) {
       errors.payment = 'Не выбран способ оплаты';
@@ -76,11 +93,7 @@ export class Buyer{
       errors.phone = 'Укажите ваш номер телефона'
     }
 
-    if (Object.keys(errors).length !== 0) {
-      return errors
-    } 
-
-    return true
+    return errors;
   }
 
 }

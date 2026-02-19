@@ -1,84 +1,185 @@
-import { ApiClient } from './components/models/ApiClient';
-import { Buyer } from './components/models/Buyer';
-import { MainCatalog } from './components/models/MainCatalog';
-import { ProductBasket } from './components/models/ProductBascet';
-import './scss/styles.scss';
-import { IProduct } from './types';
-import { API_URL } from './utils/constants';
+import { Present } from "./components/baseClasssView/Present";
+import { CardBasket } from "./components/view/CardBasket";
+import { CardCatalog } from "./components/view/CardCatalog";
+import "./scss/styles.scss";
+import { IBuyer, IProduct } from "./types";
+import { cloneTemplate } from "./utils/utils";
 
-// Проверка Api
-const api = new ApiClient(API_URL)
+class Presenter extends Present{
+  initializateEvent(): void {
+    // Отрисовка каталога товаров
+    this.events.on("catalog:change", () => {
+      const cards = this.mainCatalog.products.map((product) => {
+        const card = new CardCatalog(
+          cloneTemplate(
+            document.querySelector("#card-catalog") as HTMLTemplateElement,
+          ),
+          {
+            onClick: () => this.events.emit("card:select", product),
+          },
+        );
+        return card.render(product);
+      });
+      this.mainGallery.render({ catalog: cards });
+    });
 
-const dataCatalog =  await api.getProductCards()
+    // Выбор карточки товара
+    this.events.on("card:select", (product: IProduct) => {
+      this.mainCatalog.card = product;
+      this.events.emit("card:save");
+    });
 
-// Проверка MinCatalog
-const catalog = new MainCatalog()
-catalog.saveProducts = dataCatalog
-const card: IProduct | string = catalog.getProduct("854cef69-976d-4c2a-a18c-2aa45046c390")
+    // Сохранение выбраной карточки
+    this.events.on("card:save", () => {
+      const selectCard = this.mainCatalog.card;
 
-if (typeof(card) !== 'string') {
-  catalog.card = card
+      if (!selectCard) return;
+
+      const cardModalRender = {
+        ...selectCard,
+        buttonText:
+          selectCard.price === null
+            ? "Недоступно"
+            : this.basket.checkProduct(selectCard.id)
+              ? "Удалить из корзины"
+              : "Купить",
+        buttonStatus: !Boolean(selectCard.price),
+      };
+      const modalElement = this.cardModal.render(cardModalRender);
+      this.mainModal.render({ content: modalElement });
+      this.mainModal.open();
+    });
+
+    this.events.on("buy:click", (product: IProduct) => {
+      if (!this.basket.checkProduct(product.id)) {
+        this.basket.addProduct(product);
+      } else {
+        this.basket.delProduct(product.id);
+      }
+
+      this.mainModal.close();
+    });
+
+    // Покупка, удаление из коррзины
+    this.events.on("basket:change", () => {
+      const counter = this.basket.countProducts();
+      const productsBasket = this.basket.products;
+
+      const products = productsBasket.map(
+        (product: IProduct, index: number) => {
+          const productCard = new CardBasket(
+            cloneTemplate(
+              document.querySelector("#card-basket") as HTMLTemplateElement,
+            ),
+            {
+              onClick: () => this.events.emit("product:remove", product),
+            },
+          );
+          const card = {
+            ...product,
+            index: index + 1,
+          };
+
+          return productCard.render(card);
+        },
+      );
+
+      const cardRender = {
+        products: products,
+        summa: this.basket.getSumProductsPrice(),
+        statusBtn: !Boolean(this.basket.getSumProductsPrice()),
+      };
+
+      this.basketModal.render(cardRender);
+
+      this.header.render({ counter: counter });
+    });
+
+    // Открытие корзины
+    this.events.on("basket:open", () => {
+      this.mainModal.render({ content: this.basketModal.render() });
+      this.mainModal.open();
+    });
+
+    // Удаление из корзины
+    this.events.on("product:remove", (product: IProduct) => {
+      this.basket.delProduct(product.id);
+    });
+
+    // Оформление заказа
+    this.events.on("order:open", () => {
+      this.mainModal.render({ content: this.formOrder.render() });
+    });
+
+    // Редактирование формы заказа
+    this.events.on("form:edit", (formInfo: Partial<IBuyer>) => {
+      this.buyer.setNewShopperData(formInfo);
+    });
+
+    this.events.on("contact:open", () => {
+      this.mainModal.render({ content: this.formContact.render() });
+    });
+
+    // Изменение данных покупателя
+    this.events.on("buyer:change", (buyer: IBuyer) => {
+      const errors = this.buyer.checkData();
+      const { payment, address } = errors;
+      const errorsForm = { payment, address };
+      const buttonStatus = !Object.values(errorsForm).every(
+        (err) => err === null,
+      );
+
+      const formRender = {
+        ...buyer,
+        erors: errorsForm,
+        buttonStatus,
+      };
+
+      this.formOrder.render(formRender);
+    });
+
+    // Изменение контактных данных
+    this.events.on("contact:change", (info) => {
+      const err = this.buyer.checkData();
+      const { email, phone } = err;
+      const errContactForm = { email, phone };
+      const btnStatus = !Object.values(errContactForm).every(
+        (elem) => elem === null,
+      );
+      const formRender = {
+        ...info,
+        erors: errContactForm,
+        buttonStatus: btnStatus,
+      };
+      this.formContact.render(formRender);
+    });
+
+    // Отправка заказа
+    this.events.on("order:submit", () => {
+      const err = this.buyer.checkData();
+      if (!Object.values(err).every((elem) => elem === null)) {
+        this.mainModal.render({ content: this.formContact.render() });
+      } else {
+        const items = this.basket.products.map(
+          (product: IProduct) => product.id,
+        );
+        const orderInfo = {
+          ...this.buyer.shopperData,
+          total: this.basket.getSumProductsPrice(),
+          items,
+        };
+
+        this.submitOrder(orderInfo);
+      }
+    });
+
+    // Закрытие модального окна
+    this.events.on("modal:close", () => {
+      this.mainModal.close();
+    });
+  }
 }
 
-console.log('Каталог продуктов - ',catalog.products)
-console.log('Карточка текущего товара - ', catalog.card)
 
-
-// Проверка Buyer
-const person = new Buyer()
-
-person.setNewShopperData({
-  payment:'cash', 
-  address:'Россия',
-  email: '12213@mail.ru',
-  phone: "89022213"
-})
-
-console.log(`Проверка правильности заполнения данных пользователя - ${person.checkData()}`)
-console.log('Получаем все данные пользователя - ', person.shopperData)
-
-person.clearBuer()
-console.log('Проверка правильности заполнения данных пользователя после очистки данных - ', person.checkData())
-
-person.setNewShopperData({phone: '29922'})
-console.log('Проверяем что можно добавлять только одно свойство - ', person.shopperData)
-
-person.setNewShopperData({
-  payment: 'card', 
-  address: 'Сыктывкар',
-  email: '12213@mail.ru',
-  phone: "89022213"
-})
-console.log(`Проверка правильности заполнения данных пользователя после заполнения новых данных - ${person.checkData()}`)
-console.log('Получаем все данные пользователя после обновления - ', person.shopperData)
-
-
-// // Проверка ProductBasket
-const basket = new ProductBasket()
-
-basket.addProduct(catalog.card)
-console.log('Получаем все карточки товаров в корзине - ', basket.products)
-
-basket.clearBascet()
-console.log('Получаем все карточки товаров в корзине после очистки корзины - ', basket.products)
-
-for (let product of catalog.products) {
-  basket.addProduct(product)
-}
-console.log('Получаем все карточки товаров в корзине после добавления карточек - ', basket.products)
-console.log(`Проверка наличия товара по его id - ${basket.checkProduct("854cef69-976d-4c2a-a18c-2aa45046c390")}
-\nid - 854cef69-976d-4c2a-a18c-2aa45046c390`)
-
-console.log(`Проверка наличия товара по его id - ${basket.checkProduct('1')}\nid - 1`)
-
-console.log(`Подсчет количества товаров в корзине - ${basket.countProducts()}`)
-console.log(`Подсчет суммы продуктов добавленных в корзину - ${basket.getSumProductsPrice()}`)
-
-console.log('Попытка удалить элемент, которого нет в корзине - ', basket.delProduct('12'))
-console.log('Удаление товара из корзины по id - ', basket.delProduct("854cef69-976d-4c2a-a18c-2aa45046c390"),
-'\nid - 854cef69-976d-4c2a-a18c-2aa45046c390')
-
-console.log(`Проверка наличия товара по его id после удаления из корзины - 
-  ${basket.checkProduct("854cef69-976d-4c2a-a18c-2aa45046c390")}\nid - 854cef69-976d-4c2a-a18c-2aa45046c390`)
-
-console.log('Получаем все карточки товаров в корзине после удаления - ', basket.products)
+const presenter = new Presenter();
+await presenter.initialize();
