@@ -2,6 +2,9 @@ import { ApiPostMethods, AplResponseList, IProduct, PostAnswer, PostData } from 
 import { Api } from "../base/Api";
 
 
+/**
+ * Класс для взаимодействия с сервером методами базового класса Api
+ */
 export class ApiClient extends Api {
 
     constructor(baseurl: string, options?: RequestInit) { 

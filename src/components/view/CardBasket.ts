@@ -6,10 +6,19 @@ type TIndex = {
   index: number
 }
 
+/**
+ * Класс для отрисовки карточки товара в корзине
+ */
 export class CardBasket extends Card<TIndex> {
   protected _index: HTMLElement;
   protected buttonRemove: HTMLButtonElement;
-
+  
+  /**
+   * В конструкторе находим все элементы для данного компонента
+   * и сохраняем их
+   * @param container  - текущий контейнер в котором будем работать (HTMLTemplateElement)
+   * @param action - callback для подписки на событие кнопки
+   */
   constructor(container: HTMLElement, action?: ICardAction) {
     super(container)
 
@@ -21,6 +30,10 @@ export class CardBasket extends Card<TIndex> {
     }
   }
 
+  /**
+   * Сеттер для установики нового индекса в корзине для карточки товара
+   * @param ind - Новый индекс для карточки товара
+   */
   set index(ind: number) {
     this._index.textContent = String(ind)
   }

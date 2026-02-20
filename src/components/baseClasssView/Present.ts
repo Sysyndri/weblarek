@@ -17,6 +17,10 @@ import { Modal } from "../view/Modal";
 import { Success } from "../view/Success";
 
 
+/**
+ * Класс для связи между всеми классами в приложении.
+ * Предоставляет доступ к моделям данных и View классам приложения
+ */
 export abstract class Present{
   protected events: EventEmitter;
   protected api: ApiClient;
@@ -33,6 +37,8 @@ export abstract class Present{
   protected basketModal: Basket;
   protected cardBasket: CardBasket;
 
+  // В конструкторе инициализируются все модели которые будут использоваться и 
+  // И которые можно инициализировать сейчас
   constructor() {
     this.events = new EventEmitter();
     this.api = new ApiClient(API_URL);
@@ -86,8 +92,16 @@ export abstract class Present{
     this.initializateEvent();
   }
 
+  /**
+   * Главынй метод класса, создается отдельно для наследного класса
+   * Реализует всю логику взаимодействия с классами
+   */
   abstract  initializateEvent():void ;
   
+  /**
+   * Метод для post обращению к серверу, через api
+   * @param orderInfo - Информация об покупателе, корзине и сумме товаров
+   */
   async submitOrder(orderInfo: any): Promise<void> {
     try {
       const response: PostAnswer = await this.api.postOrder(orderInfo);
@@ -100,7 +114,10 @@ export abstract class Present{
       console.error("Ошибка отправки заказа: ", err);
     }
   }
-
+  /**
+   * Метод для получения, данных для отрисовки
+   * Метод запрашивает данные с сервера при помощи api и сохраняет данные в каталог приложения
+   */
   async initialize(): Promise<void> {
     try {
       const catalogOfServer: IProduct[] = await this.api.getProductCards();

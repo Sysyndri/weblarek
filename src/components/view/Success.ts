@@ -5,13 +5,22 @@ import { TCardBasket } from "./Basket";
 
 type TSuccess = Pick<TCardBasket, 'summa'>
 
+/**
+ * Класс для отображения информации об успешном выполнении покупки
+ */
 export class Success extends Component<TSuccess> {
   protected buttonClose: HTMLButtonElement;
   protected sum: HTMLElement;
 
+  /**
+   * В конструкторе находим все элементы для данного компонента
+   * и сохраняем их
+   * @param event - класс EventEmmiter для подписки на события и взаимодействия с ними
+   * @param container  - текущий контейнер в котором будем работать (HTMLTemplateElement)
+   */
   constructor(
-    protected events: IEvents,
-    container: HTMLElement,
+    protected event: IEvents,
+    container: HTMLTemplateElement,
   ) {
     super(container);
 
@@ -26,10 +35,14 @@ export class Success extends Component<TSuccess> {
 
     this.buttonClose.addEventListener("click", (event) => {
       event.preventDefault();
-      this.events.emit("modal:close");
+      this.event.emit("modal:close");
     });
   }
 
+  /**
+   * Сеттер для изменения сообщения о покупке, в зависимости от суммы корзины
+   * @param value - Новое значение суммы корзины
+   */
   set summa(value: number) {
     const str =
       value < 10000

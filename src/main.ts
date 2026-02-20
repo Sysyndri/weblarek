@@ -5,9 +5,17 @@ import "./scss/styles.scss";
 import { IBuyer, IProduct } from "./types";
 import { cloneTemplate } from "./utils/utils";
 
+/**
+ * Класс представления, отвечает за прослушивание событий на странице и их отрисовку
+ * Наследуется от abstract класса Present
+*/
 class Presenter extends Present{
+  /**
+   * Главный метод класса. Он слушает все события которые происходят на странице
+   * и отрисовывает нужные компоненты
+   */
   initializateEvent(): void {
-    // Отрисовка каталога товаров
+    // Отрисовка каталога товаров полученных по api
     this.events.on("catalog:change", () => {
       const cards = this.mainCatalog.products.map((product) => {
         const card = new CardCatalog(
@@ -116,6 +124,7 @@ class Presenter extends Present{
       this.buyer.setNewShopperData(formInfo);
     });
 
+    // Открытие формы данных пользователя
     this.events.on("contact:open", () => {
       this.mainModal.render({ content: this.formContact.render() });
     });
