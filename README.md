@@ -319,16 +319,99 @@ Presenter - презентер содержит основную логику п
 `open()` - Метод для открытия модального окна
 `close()` - Метод для закрытия модального окна
 
-#### Класс success
+#### Класс Success
+Класс для отображения информации об успешном выполнении покупки
+
+Поля класса:
+`buttonClose: HTMLButtonElement` - Элемент кнопки закрытия формы success
+`sum: HTMLElement` - Элемент отображающий сообщение с итоговой суммой
+
+Конструктор: 
+`constructor(protected event: IEvents, container: HTMLTemplateElement,)` - В конструкторе находим все элементы для данного компонента и схраняем их в классе
+
+Методы класса:
+`set summa(value: number)` - Сеттер для изменения сообщения о покупке, в зависимости от суммы корзины
+
 
 #### Класс CardCatalog
-Класс для отображения одного товара
+Класс для карточки товара в главном каталоге
 
 Конструктор:
-`constrructor() {but}`
+`constructor(container: HTMLTemplateElement, action?: ICardAction)` - В конструкторе находим все элементы для данного компонента и схраняем их в классе
 
 
-#### Класс Modal
+#### Класс CardModal
+Класс для карточки товара в модальном окне
+
+Поля класса:
+`descriptionCard: HTMLElement` - Элемент описания карточки товара
+`buyButtonCard: HTMLButtonElement` - Элемент кнопки добавленя товара в корзину
+
+Конструктор: 
+`constructor(container: HTMLTemplateElement, action?: ICardAction)` - В конструкторе находим все элементы для данного компонента и схраняем их в классе
+
+Методы класса:
+`set description(value: string)` - Сеттер для установки нового значения описания для карточки товара
+`set buttonText(value: string)` - Сеттер для установки нового текста для кнопки
+`set buttonStatus(value: boolean)` - Сеттер для установки нового boolean статуса кнопки
 
 
-#### Класс Form
+#### Класс CardBasket
+Класс для отрисовки карточки товара в корзине
+
+Поля класса:
+`_index: HTMLElement` - Элемент индекса карточки товара в корзине
+`buttonRemove: HTMLButtonElement` - Элемент кнопки удаления карточки товара из корзины
+
+Конструктор: 
+`constructor(container: HTMLTemplateElement, action?: ICardAction)` - В конструкторе находим все элементы для данного компонента и схраняем их в классе
+
+Методы класса:
+`set index(ind: number)` - Сеттер для установики нового индекса в корзине для карточки товара
+
+
+#### Класс Basket
+Класс для отрисовки корзины
+
+Поля класса:
+`productsArr: HTMLUListElement` - Элемент списка товаров в корзине
+`buttonOrder: HTMLButtonElement` - Элемент кнопки оформление товаров в корзине
+`basketSumm: HTMLElement` - Элемент суммы товаров в корзине
+
+Конструктор: 
+`constructor(protected event: IEvents, container: HTMLTemplateElement)` - В конструкторе находим все элементы для данного компонента и схраняем их в классе
+
+Методы класса:
+`set products(value: HTMLElement[])` - Сеттер для изменения добавленых продуктов в корзине
+`set statusBtn(value: boolean)` - Сеттер для установки нового статуса кнопки в корзине
+`set summa(value: number)` - Сеттер для установки новой суммы корзины
+
+#### Класс FormOrder
+Класс для отрисовки формы способа оплаты и адреса
+
+Поля класса:
+`formButtonOrder: HTMLButtonElement[]` - Списочный элемент кнопок для выбора card или наличныйй расчет
+`formAddress: HTMLInputElement` - Элемент формы ввода поля address
+`formButtonNext: HTMLButtonElement` - Элемент кнопки формы 
+
+Конструктор: 
+`constructor(protected event: IEvents, container: HTMLTemplateElement)` - В конструкторе находим все элементы для данного компонента и схраняем их в классе
+
+Методы класса:
+`set address(address: string)` - Сеттер для установки нового значения адресса в форме
+`set payment(pay: string)` - Сеттер для установки нового значения типа оплаты для пользователя
+
+
+#### Класс FormContact
+Класс для отрисовки формы для контактных данных покупателя
+
+Поля класса:
+`emailForm: HTMLInputElement` - Элемент формы ввода поля email
+`phoneForm: HTMLInputElement` - Элемент формы ввода поля phone
+
+Конструктор: 
+`constructor(protected event: IEvents, container: HTMLTemplateElement)` - В конструкторе находим все элементы для данного компонента и схраняем их в классе
+
+Методы класса:
+`set email(email: string)` - Сеттер для установки нового email пользователя
+`set phone(phone: string)` - Сеттер для установки нового телефона пользователя
