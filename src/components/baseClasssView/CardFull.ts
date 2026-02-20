@@ -18,7 +18,7 @@ export abstract class CardFull extends Card<TCardFull> {
    * и сохраняем их
    * @param container - текущий контейнер в котором будем работать (HTMLTemplateElement)
    */
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLTemplateElement) {
     super(container);
 
     this.categoryCard = ensureElement<HTMLElement>('.card__category', this.container);

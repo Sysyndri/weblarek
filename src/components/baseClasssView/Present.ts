@@ -37,7 +37,7 @@ export abstract class Present{
   protected basketModal: Basket;
   protected cardBasket: CardBasket;
 
-  // В конструкторе инициализируются все модели которые будут использоваться и 
+  // В конструкторе инициализируются все модели которые будут использоваться  
   // И которые можно инициализировать сейчас
   constructor() {
     this.events = new EventEmitter();

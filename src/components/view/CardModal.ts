@@ -16,7 +16,7 @@ export class CardModal extends CardFull {
    * @param container  - текущий контейнер в котором будем работать (HTMLTemplateElement)
    * @param action - callback для подписки на событие кнопки
    */
-  constructor(container: HTMLElement, action?: ICardAction) {
+  constructor(container: HTMLTemplateElement, action?: ICardAction) {
     super(container);
 
     this.descriptionCard = ensureElement<HTMLElement>('.card__text', this.container);

@@ -23,7 +23,7 @@ export class Basket extends Component<TCardBasket> {
    * @param event - класс EventEmmiter для подписки на события и взаимодействия с ними
    * @param container  - текущий контейнер в котором будем работать (HTMLTemplateElement)
    */
-  constructor(protected event: IEvents, container: HTMLElement) {
+  constructor(protected event: IEvents, container: HTMLTemplateElement) {
     super(container);
 
     this.productsArr = ensureElement<HTMLUListElement>('.basket__list', this.container)

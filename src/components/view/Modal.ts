@@ -7,13 +7,24 @@ interface IModal {
   content: HTMLElement;
 }
 
+
+/**
+ * Класс для отрисовки модальных окон 
+ * Главное модальный класс
+ */
 export class Modal extends Component<IModal> {
   protected buttonClose: HTMLButtonElement;
   protected _content: HTMLElement;
 
+  /**
+   * В конструкторе находим все элементы для данного компонента
+   * и сохраняем их
+   * @param event - класс EventEmmiter для подписки на события и взаимодействия с ними
+   * @param container  - текущий контейнер в котором будем работать (HTMLElement)
+   */
   constructor(
     protected events: IEvents,
-    container: HTMLElement,
+    container: HTMLElement
   ) {
     super(container);
 
@@ -35,14 +46,24 @@ export class Modal extends Component<IModal> {
     });
   }
 
+  /**
+   * Сеттер для установки нового контента модального окна
+   * @param value - Новое значение контента модального окна (HTMLElement) 
+   */
   set content(value: HTMLElement) {
     this._content.replaceChildren(value);
   }
 
+  /**
+   * Метод для открытия модального окна
+   */
   open() {
     this.container.classList.add("modal_active");
   }
 
+  /**
+   * Метод для закрытия модального окна
+   */
   close() {
     this.container.classList.remove("modal_active");
   }

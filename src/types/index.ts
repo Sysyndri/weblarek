@@ -40,11 +40,11 @@ export interface IBuyer {
     phone: string;
 }
 
-export interface ICardAction {
-    onClick?: () => void;
-}
-
 export type PostData = IBuyer & {
     items: string[];
     total: number;
+}
+
+export interface ICardAction {
+    onClick?: () => void;
 }

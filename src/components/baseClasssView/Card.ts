@@ -13,10 +13,10 @@ export abstract class Card<T> extends Component<T & TCardView> {
 
   /**
    * В конструкторе находим все элементы для данного компонента
-   * и сохраняем их
+   * и сохраняем их в классе
    * @param container - текущий контейнер в котором будем работать (HTMLTemplateElement)
    */
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLTemplateElement) {
     super(container);
 
     this.titleCard = ensureElement<HTMLElement>(".card__title", this.container);

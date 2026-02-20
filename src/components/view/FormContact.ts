@@ -16,7 +16,7 @@ export class FormContact extends Form {
    * @param event - класс EventEmmiter для подписки на события и взаимодействия с ними
    * @param container  - текущий контейнер в котором будем работать (HTMLTemplateElement)
    */
-  constructor(protected event: IEvents, container: HTMLElement) {
+  constructor(protected event: IEvents, container: HTMLTemplateElement) {
     super(container, event);
 
     this.emailForm = ensureElement<HTMLInputElement>('input[name="email"]', this.container);

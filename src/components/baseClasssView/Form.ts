@@ -8,7 +8,7 @@ interface IFormErr {
 }
 
 /**
- * Базовый класс формы
+ * Базовый класс для всех форм
  */
 export abstract class Form extends Component<IFormErr & IBuyer> {
   protected formError: HTMLElement;
@@ -20,7 +20,7 @@ export abstract class Form extends Component<IFormErr & IBuyer> {
    * @param events - класс EventEmmiter для подписки на события и взаимодействия с ними
    * @param container  - текущий контейнер в котором будем работать (HTMLTemplateElement) 
    */
-  constructor(container: HTMLElement, protected event: IEvents) {
+  constructor(container: HTMLTemplateElement, protected event: IEvents) {
     super(container);
 
     this.formError = ensureElement<HTMLElement>('.form__errors', this.container);
