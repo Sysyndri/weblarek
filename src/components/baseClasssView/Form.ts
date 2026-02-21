@@ -24,12 +24,12 @@ export abstract class Form extends Component<IFormErr & IBuyer> {
     super(container);
 
     this.formError = ensureElement<HTMLElement>('.form__errors', this.container);
-    this.formButton = ensureElement<HTMLButtonElement>('[type="submit"]', this.container);
+    this.formButton = ensureElement<HTMLButtonElement>('[type="submit"]', this.container); 
 
 
-    this.formButton.addEventListener('click', (event) => {
+    this.container.addEventListener('submit', (event: Event) => {
       event.preventDefault();
-      this.event.emit('order:submit')
+      this.event.emit(`${this.container.getAttribute('name')}:submit`)
     })
 
   }

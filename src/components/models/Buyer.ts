@@ -56,7 +56,7 @@ export class Buyer{
    * Удаляет данные пользователя и возвращает к исходному значению
    */
   clearBuer(): void {
-    this._payment = null;
+    this._payment = '';
     this._address = '';
     this._email = '';
     this._phone = '';

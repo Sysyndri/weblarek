@@ -1,4 +1,3 @@
-import { ICardAction } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { CardFull } from "../baseClasssView/Cardfull";
 
@@ -16,15 +15,11 @@ export class CardModal extends CardFull {
    * @param container  - текущий контейнер в котором будем работать (HTMLTemplateElement)
    * @param action - callback для подписки на событие кнопки
    */
-  constructor(container: HTMLTemplateElement, action?: ICardAction) {
+  constructor(container: HTMLTemplateElement) {
     super(container);
 
     this.descriptionCard = ensureElement<HTMLElement>('.card__text', this.container);
     this.buyButtonCard = ensureElement<HTMLButtonElement>('.card__button', this.container);
-
-    if (action?.onClick) {
-      this.container.addEventListener('click', action.onClick);
-    }
   }
 
   /**

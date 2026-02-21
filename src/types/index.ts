@@ -1,4 +1,4 @@
-export type TPayment = 'card' | 'cash' | '' | null; 
+export type TPayment = 'card' | 'cash' | '' ; 
 
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
