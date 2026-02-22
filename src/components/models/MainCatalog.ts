@@ -46,14 +46,14 @@ export class MainCatalog {
   /**
    * Метод для получения текущей карточки товара
    */
-  get card(): IProduct {
+  getCard(): IProduct {
     return this._currentCard;
   }
 
   /**
    * Метод для сохранения новой текущей карточки товара
    */
-  set card(item: IProduct) {
+  setCard(item: IProduct) {
     this._currentCard = item;
   }
 }

@@ -1,27 +1,13 @@
 import {
-  IApi,
   IBuyer,
   IProduct,
   PostAnswer,
   ValidationErrors,
 } from "../../types";
-import { API_URL } from "../../utils/constants";
 import { cloneTemplate } from "../../utils/utils";
-import { EventEmitter, IEvents } from "../base/Events";
-import { ApiClient } from "../models/ApiClient";
-import { Buyer } from "../models/Buyer";
-import { MainCatalog } from "../models/MainCatalog";
-import { ProductBasket } from "../models/ProductBascet";
-import { Basket } from "../view/Basket";
+import { IEvents } from "../base/Events";
 import { CardBasket } from "../view/CardBasket";
 import { CardCatalog } from "../view/CardCatalog";
-import { CardModal } from "../view/CardModal";
-import { FormContact } from "../view/FormContact";
-import { FormOrder } from "../view/FormOrder";
-import { Gallary } from "../view/Gallary";
-import { Header } from "../view/Header";
-import { Modal } from "../view/Modal";
-import { Success } from "../view/Success";
 
 /**
  * Класс для связи между всеми классами в приложении.
@@ -35,7 +21,8 @@ interface IApiClient {
 
 interface IMainCatalog {
   products: IProduct[];
-  card: IProduct | null;
+  getCard: () => IProduct;
+  setCard: (arg0: IProduct) => void;
   saveProducts: IProduct[];
 }
 
@@ -94,41 +81,25 @@ interface IFormContact {
   render(data?: any): HTMLElement;
 }
 
-export class Present {
-  protected events: IEvents;
-
-  protected api: IApiClient;
-  protected basket: IProductBasket;
-  protected mainCatalog: IMainCatalog;
-  protected buyer: IBuyerModel;
-
-  protected header: IHeader;
-  protected basketModal: IBasket;
-  protected mainGallery: IGallary;
-  protected mainModal: IModal;
-  protected success: ISuccess;
-  protected cardModal: ICardModal;
-  protected cardBasket: ICardBasket;
-  protected formOrder: IFormOrder;
-  protected formContact: IFormContact;
+export class Presenter {
 
   // В конструкторе инициализируются все модели которые будут использоваться
   // И которые можно инициализировать сейчас
   constructor(
-    events: EventEmitter,
-    api: IApiClient,
-    mainCatalog: IMainCatalog,
-    buyer: IBuyerModel,
-    header: IHeader,
-    mainGallery: IGallary,
-    mainModal: IModal,
-    basketModal: IBasket,
-    basket: IProductBasket,
-    cardBasket: ICardBasket,
-    cardModal: ICardModal,
-    formOrder: IFormOrder,
-    formContact: IFormContact,
-    success: ISuccess,
+    protected events: IEvents,
+    protected api: IApiClient,
+    protected mainCatalog: IMainCatalog,
+    protected buyer: IBuyerModel,
+    protected header: IHeader,
+    protected mainGallery: IGallary,
+    protected mainModal: IModal,
+    protected basketModal: IBasket,
+    protected basket: IProductBasket,
+    protected cardBasket: ICardBasket,
+    protected cardModal: ICardModal,
+    protected formOrder: IFormOrder,
+    protected formContact: IFormContact,
+    protected success: ISuccess,
   ) {
     this.events = events;
     this.api = api;
@@ -144,52 +115,7 @@ export class Present {
     this.formOrder = formOrder;
     this.formContact = formContact;
     this.success = success;
-    this.events = new EventEmitter();
-    this.api = new ApiClient(API_URL);
-    this.mainCatalog = new MainCatalog(this.events);
-    this.buyer = new Buyer(this.events);
-
-    this.header = new Header(
-      this.events,
-      document.querySelector(".header") as HTMLElement,
-    );
-    this.mainGallery = new Gallary(
-      document.querySelector(".gallery") as HTMLElement,
-    );
-    this.mainModal = new Modal(
-      this.events,
-      document.querySelector(".modal") as HTMLElement,
-    );
-    this.basketModal = new Basket(
-      this.events,
-      cloneTemplate(document.querySelector("#basket") as HTMLTemplateElement),
-    );
-    this.basket = new ProductBasket(this.events);
-    this.cardBasket = new CardBasket(
-      cloneTemplate(
-        document.querySelector("#card-basket") as HTMLTemplateElement,
-      ),
-    );
-
-    this.cardModal = new CardModal(
-      cloneTemplate(
-        document.querySelector("#card-preview") as HTMLTemplateElement,
-      ),
-    );
-
-    this.formOrder = new FormOrder(
-      this.events,
-      cloneTemplate(document.querySelector("#order") as HTMLTemplateElement),
-    );
-    this.formContact = new FormContact(
-      this.events,
-      cloneTemplate(document.querySelector("#contacts") as HTMLTemplateElement),
-    );
-    this.success = new Success(
-      this.events,
-      cloneTemplate(document.querySelector("#success") as HTMLTemplateElement),
-    );
-
+ 
     this.initializateEvent();
   }
 
@@ -216,13 +142,13 @@ export class Present {
 
     // Выбор карточки товара
     this.events.on("card:select", (product: IProduct) => {
-      this.mainCatalog.card = product;
+      this.mainCatalog.setCard(product);
       this.events.emit("card:save");
     });
 
     // Сохранение выбраной карточки
     this.events.on("card:save", () => {
-      const selectCard = this.mainCatalog.card;
+      const selectCard = this.mainCatalog.getCard();
 
       if (!selectCard) return;
 
@@ -241,13 +167,13 @@ export class Present {
       this.mainModal.open();
     });
 
-    this.events.on("buy:click", (product: IProduct) => {
-      if (!this.basket.checkProduct(product.id)) {
-        this.basket.addProduct(product);
+    this.events.on("buy:click", () => {
+      const selectProduct: IProduct = this.mainCatalog.getCard();
+      if (!this.basket.checkProduct(selectProduct.id)) {
+        this.basket.addProduct(selectProduct);
       } else {
-        this.basket.delProduct(product.id);
+        this.basket.delProduct(selectProduct.id);
       }
-
       this.mainModal.close();
     });
 
@@ -313,41 +239,41 @@ export class Present {
     });
 
     // Изменение данных покупателя
-    this.events.on("buyer:change", (buyer: IBuyer) => {
+    this.events.on("buyer:change", () => {
       const errors = this.buyer.checkData();
-      const { payment, address } = errors;
-      const errorsForm = { payment, address };
-      const buttonStatus = !Object.values(errorsForm).every(
+      const { payment, address, email, phone } = errors;
+
+      const errorsOrderForm = { payment, address };
+      const orderButtonStatus = !Object.values(errorsOrderForm).every(
         (err) => err === null,
       );
 
       const formRender = {
-        ...buyer,
-        erors: errorsForm,
-        buttonStatus,
+        erors: errorsOrderForm,
+        buttonStatus: orderButtonStatus,
       };
 
       this.formOrder.render(formRender);
-    });
 
-    // Изменение контактных данных
-    this.events.on("contact:change", (info) => {
-      const err = this.buyer.checkData();
-      const { email, phone } = err;
-      const errContactForm = { email, phone };
-      const btnStatus = !Object.values(errContactForm).every(
+      const errorsContactForm = { email, phone };
+      const contactButtonStatus = !Object.values(errorsContactForm).every(
         (elem) => elem === null,
       );
-      const formRender = {
-        ...info,
-        erors: errContactForm,
-        buttonStatus: btnStatus,
+
+      const contactRender = {
+        erors: errorsContactForm,
+        buttonStatus: contactButtonStatus,
       };
-      this.formContact.render(formRender);
+
+      this.formContact.render(contactRender)
     });
 
-    // Отправка заказа
     this.events.on("order:submit", () => {
+      this.mainModal.render({content: this.formContact.render()})
+    })
+
+    // Отправка заказа
+    this.events.on("contacts:submit", () => {
       const err = this.buyer.checkData();
       if (!Object.values(err).every((elem) => elem === null)) {
         this.mainModal.render({ content: this.formContact.render() });
@@ -360,6 +286,7 @@ export class Present {
           total: this.basket.getSumProductsPrice(),
           items,
         };
+        
 
         this.submitOrder(orderInfo);
       }

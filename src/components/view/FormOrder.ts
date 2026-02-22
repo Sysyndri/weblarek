@@ -9,7 +9,6 @@ import { Form } from "../baseClasssView/Form";
 export class FormOrder extends Form {
   protected formButtonOrder: HTMLButtonElement[];
   protected formAddress: HTMLInputElement;
-  protected formButtonNext: HTMLButtonElement;
 
   /**
    * В конструкторе находим все элементы для данного компонента
@@ -22,11 +21,7 @@ export class FormOrder extends Form {
 
     this.formButtonOrder = ensureAllElements<HTMLButtonElement>('.button_alt', this.container);
     this.formAddress = ensureElement<HTMLInputElement>('[name="address"]', this.container);
-    this.formButtonNext = ensureElement<HTMLButtonElement>('.order__button', this.container);
 
-    this.formButtonNext.addEventListener(('click'), () => {
-      this.event.emit('contact:open');
-    })
 
     this.formButtonOrder.forEach((button) => {
       button.addEventListener('click', () => {

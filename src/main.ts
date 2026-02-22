@@ -1,194 +1,70 @@
-import { Present } from "./components/baseClasssView/Present";
+import { EventEmitter } from "./components/base/Events";
+import { Presenter } from "./components/baseClasssView/Presenter";
+import { ApiClient } from "./components/models/ApiClient";
+import { Buyer } from "./components/models/Buyer";
+import { MainCatalog } from "./components/models/MainCatalog";
+import { ProductBasket } from "./components/models/ProductBascet";
+import { Basket } from "./components/view/Basket";
 import { CardBasket } from "./components/view/CardBasket";
-import { CardCatalog } from "./components/view/CardCatalog";
+import { CardModal } from "./components/view/CardModal";
+import { FormContact } from "./components/view/FormContact";
+import { FormOrder } from "./components/view/FormOrder";
+import { Gallary } from "./components/view/Gallary";
+import { Header } from "./components/view/Header";
+import { Modal } from "./components/view/Modal";
+import { Success } from "./components/view/Success";
 import "./scss/styles.scss";
-import { IBuyer, IProduct } from "./types";
+import { API_URL } from "./utils/constants";
 import { cloneTemplate } from "./utils/utils";
 
-/**
- * Класс представления, отвечает за прослушивание событий на странице и их отрисовку
- * Наследуется от abstract класса Present
-*/
-class Presenter extends Present{
-  /**
-   * Главный метод класса. Он слушает все события которые происходят на странице
-   * и отрисовывает нужные компоненты
-   */
-  initializateEvent(): void {
-    // Отрисовка каталога товаров полученных по api
-    this.events.on("catalog:change", () => {
-      const cards = this.mainCatalog.products.map((product) => {
-        const card = new CardCatalog(
-          cloneTemplate(
-            document.querySelector("#card-catalog") as HTMLTemplateElement,
-          ),
-          {
-            onClick: () => this.events.emit("card:select", product),
-          },
-        );
-        return card.render(product);
-      });
-      this.mainGallery.render({ catalog: cards });
-    });
+const events = new EventEmitter();
 
-    // Выбор карточки товара
-    this.events.on("card:select", (product: IProduct) => {
-      this.mainCatalog.card = product;
-      this.events.emit("card:save");
-    });
+const api = new ApiClient(API_URL);
+const basket = new ProductBasket(events);
+const mainCatalog = new MainCatalog(events);
+const buyer = new Buyer(events);
 
-    // Сохранение выбраной карточки
-    this.events.on("card:save", () => {
-      const selectCard = this.mainCatalog.card;
+const header = new Header(
+  events,
+  document.querySelector(".header") as HTMLElement,
+);
+const basketModal = new Basket(
+  events,
+  cloneTemplate(document.querySelector("#basket") as HTMLTemplateElement),
+);
+const mainGallery = new Gallary(
+  document.querySelector(".gallery") as HTMLElement,
+);
+const mainModal = new Modal(
+  events,
+  document.querySelector(".modal") as HTMLElement,
+);
+const success = new Success(
+  events,
+  cloneTemplate(document.querySelector("#success") as HTMLTemplateElement),
+);
 
-      if (!selectCard) return;
-
-      const cardModalRender = {
-        ...selectCard,
-        buttonText:
-          selectCard.price === null
-            ? "Недоступно"
-            : this.basket.checkProduct(selectCard.id)
-              ? "Удалить из корзины"
-              : "Купить",
-        buttonStatus: !Boolean(selectCard.price),
-      };
-      const modalElement = this.cardModal.render(cardModalRender);
-      this.mainModal.render({ content: modalElement });
-      this.mainModal.open();
-    });
-
-    this.events.on("buy:click", (product: IProduct) => {
-      if (!this.basket.checkProduct(product.id)) {
-        this.basket.addProduct(product);
-      } else {
-        this.basket.delProduct(product.id);
-      }
-
-      this.mainModal.close();
-    });
-
-    // Покупка, удаление из коррзины
-    this.events.on("basket:change", () => {
-      const counter = this.basket.countProducts();
-      const productsBasket = this.basket.products;
-
-      const products = productsBasket.map(
-        (product: IProduct, index: number) => {
-          const productCard = new CardBasket(
-            cloneTemplate(
-              document.querySelector("#card-basket") as HTMLTemplateElement,
-            ),
-            {
-              onClick: () => this.events.emit("product:remove", product),
-            },
-          );
-          const card = {
-            ...product,
-            index: index + 1,
-          };
-
-          return productCard.render(card);
-        },
-      );
-
-      const cardRender = {
-        products: products,
-        summa: this.basket.getSumProductsPrice(),
-        statusBtn: !Boolean(this.basket.getSumProductsPrice()),
-      };
-
-      this.basketModal.render(cardRender);
-
-      this.header.render({ counter: counter });
-    });
-
-    // Открытие корзины
-    this.events.on("basket:open", () => {
-      this.mainModal.render({ content: this.basketModal.render() });
-      this.mainModal.open();
-    });
-
-    // Удаление из корзины
-    this.events.on("product:remove", (product: IProduct) => {
-      this.basket.delProduct(product.id);
-    });
-
-    // Оформление заказа
-    this.events.on("order:open", () => {
-      this.mainModal.render({ content: this.formOrder.render() });
-    });
-
-    // Редактирование формы заказа
-    this.events.on("form:edit", (formInfo: Partial<IBuyer>) => {
-      this.buyer.setNewShopperData(formInfo);
-    });
-
-    // Открытие формы данных пользователя
-    this.events.on("contact:open", () => {
-      this.mainModal.render({ content: this.formContact.render() });
-    });
-
-    // Изменение данных покупателя
-    this.events.on("buyer:change", (buyer: IBuyer) => {
-      const errors = this.buyer.checkData();
-      const { payment, address } = errors;
-      const errorsForm = { payment, address };
-      const buttonStatus = !Object.values(errorsForm).every(
-        (err) => err === null,
-      );
-
-      const formRender = {
-        ...buyer,
-        erors: errorsForm,
-        buttonStatus,
-      };
-
-      this.formOrder.render(formRender);
-    });
-
-    // Изменение контактных данных
-    this.events.on("contact:change", (info) => {
-      const err = this.buyer.checkData();
-      const { email, phone } = err;
-      const errContactForm = { email, phone };
-      const btnStatus = !Object.values(errContactForm).every(
-        (elem) => elem === null,
-      );
-      const formRender = {
-        ...info,
-        erors: errContactForm,
-        buttonStatus: btnStatus,
-      };
-      this.formContact.render(formRender);
-    });
-
-    // Отправка заказа
-    this.events.on("order:submit", () => {
-      const err = this.buyer.checkData();
-      if (!Object.values(err).every((elem) => elem === null)) {
-        this.mainModal.render({ content: this.formContact.render() });
-      } else {
-        const items = this.basket.products.map(
-          (product: IProduct) => product.id,
-        );
-        const orderInfo = {
-          ...this.buyer.shopperData,
-          total: this.basket.getSumProductsPrice(),
-          items,
-        };
-
-        this.submitOrder(orderInfo);
-      }
-    });
-
-    // Закрытие модального окна
-    this.events.on("modal:close", () => {
-      this.mainModal.close();
-    });
-  }
-}
+const cardModal = new CardModal(
+  events,
+  cloneTemplate(
+    document.querySelector("#card-preview") as HTMLTemplateElement,
+  )
+    );
+const cardBasket = new CardBasket(
+  cloneTemplate(
+    document.querySelector("#card-basket") as HTMLTemplateElement,
+  ),
+);
+const formOrder = new FormOrder(
+  events,
+  cloneTemplate(document.querySelector("#order") as HTMLTemplateElement),
+);
+const formContact = new FormContact(
+  events,
+  cloneTemplate(document.querySelector("#contacts") as HTMLTemplateElement),
+);
 
 
-const presenter = new Presenter();
+
+const presenter = new Presenter(events, api, mainCatalog, buyer, header, mainGallery, mainModal, basketModal, basket, cardBasket, cardModal, formOrder, formContact, success)
 await presenter.initialize();

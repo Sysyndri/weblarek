@@ -6,13 +6,13 @@ import { IEvents } from "../base/Events";
  */
 export class Buyer{
   
-  private _payment: TPayment = ''; 
-  private _address: string = ''; 
-  private _email: string = '';
-  private _phone: string = '';
+  private payment: TPayment = ''; 
+  private address: string = ''; 
+  private email: string = '';
+  private phone: string = '';
 
 
-    constructor(protected event: IEvents) {}
+  constructor(protected event: IEvents) {}
 
 
   /**
@@ -20,10 +20,10 @@ export class Buyer{
    */
   get shopperData(): IBuyer {
     return {
-      "payment": this._payment,
-      "address": this._address,
-      "email": this._email,
-      "phone": this._phone,
+      "payment": this.payment,
+      "address": this.address,
+      "email": this.email,
+      "phone": this.phone,
     }
   }
   
@@ -38,17 +38,21 @@ export class Buyer{
    */
   setNewShopperData({payment, address, email, phone}: Partial<IBuyer>): void 
   {
-    this._payment = payment ?? this._payment;
-    this._address = address ?? this._address;
-    this._email = email ?? this._email;
-    this._phone = phone ?? this._phone;
-
-    if (payment || address) {
-      this.event.emit('buyer:change', this.shopperData)
+    if (payment !== undefined) {
+      this.payment = payment
+      this.event.emit('buyer:change')
     }
-
-    if (email || phone) {
-      this.event.emit('contact:change', this.shopperData)
+    if (address !== undefined) {
+      this.address = address
+      this.event.emit('buyer:change')
+    }
+    if (email !== undefined) {
+      this.email = email
+      this.event.emit('buyer:change')
+    }
+    if (phone !== undefined) {
+      this.phone = phone
+      this.event.emit('buyer:change')
     }
   }
 
@@ -56,12 +60,11 @@ export class Buyer{
    * Удаляет данные пользователя и возвращает к исходному значению
    */
   clearBuer(): void {
-    this._payment = '';
-    this._address = '';
-    this._email = '';
-    this._phone = '';
-    this.event.emit('buyer:change', this.shopperData)
-    this.event.emit('contact:change', this.shopperData)
+    this.payment = '';
+    this.address = '';
+    this.email = '';
+    this.phone = '';
+    this.event.emit('form:edit')
   }
   
   /**
@@ -77,19 +80,19 @@ export class Buyer{
       address: null
     };
 
-    if (!this._payment) {
+    if (!this.payment) {
       errors.payment = 'Не выбран способ оплаты';
     }
 
-    if (!this._address?.trim()) {
+    if (!this.address?.trim()) {
       errors.address = 'Укажите адресс доставки';
     }
 
-    if (!this._email?.trim()) {
+    if (!this.email?.trim()) {
       errors.email = 'Укажите ваш email'
     }
 
-    if (!this._phone?.trim()) {
+    if (!this.phone?.trim()) {
       errors.phone = 'Укажите ваш номер телефона'
     }
 
