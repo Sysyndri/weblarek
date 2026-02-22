@@ -1,4 +1,4 @@
-import { ICardAction } from "../../types";
+import { ICardAction} from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Card } from "../baseClasssView/Card"
 
@@ -10,7 +10,7 @@ type TIndex = {
  * Класс для отрисовки карточки товара в корзине
  */
 export class CardBasket extends Card<TIndex> {
-  protected _index: HTMLElement;
+  protected indexElement: HTMLElement;
   protected buttonRemove: HTMLButtonElement;
   
   /**
@@ -22,7 +22,7 @@ export class CardBasket extends Card<TIndex> {
   constructor(container: HTMLTemplateElement, action?: ICardAction) {
     super(container)
 
-    this._index = ensureElement<HTMLElement>('.basket__item-index', this.container);
+    this.indexElement = ensureElement<HTMLElement>('.basket__item-index', this.container);
     this.buttonRemove = ensureElement<HTMLButtonElement>('.basket__item-delete', this.container);
 
     if (action?.onClick) {
@@ -35,6 +35,6 @@ export class CardBasket extends Card<TIndex> {
    * @param ind - Новый индекс для карточки товара
    */
   set index(ind: number) {
-    this._index.textContent = String(ind)
+    this.indexElement.textContent = String(ind)
   }
 }

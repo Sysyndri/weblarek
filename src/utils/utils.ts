@@ -1,3 +1,7 @@
+import { CardBasket } from "../components/view/CardBasket";
+import { CardCatalog } from "../components/view/CardCatalog";
+import { ICardAction } from "../types";
+
 export function pascalToKebab(value: string): string {
     return value.replace(/([a-z0–9])([A-Z])/g, "$1-$2").toLowerCase();
 }
@@ -135,4 +139,25 @@ export function createElement<
         }
     }
     return element;
+}
+
+/**
+ * Функция для создания нового экземпляра карточки товара в галерее
+ * @param shablon - HTMLTemplateElement карточки
+ * @param action - event событие для карточки
+ * @returns 
+ */
+export function createCardCatalog(shablon: HTMLTemplateElement, action: ICardAction): CardCatalog {
+    return new CardCatalog(shablon, action)
+}
+
+
+/**
+ * Функция для создания нового экземпляра карточки товара в корзине
+ * @param shablon - HTMLTemplateElement карточки
+ * @param action - event событие для карточки
+ * @returns 
+ */
+export function createCardBasket(shablon: HTMLTemplateElement, action: ICardAction): CardBasket {
+    return new CardBasket(shablon, action)
 }

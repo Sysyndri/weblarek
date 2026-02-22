@@ -25,11 +25,7 @@ export class FormOrder extends Form {
 
     this.formButtonOrder.forEach((button) => {
       button.addEventListener('click', () => {
-        if (button.classList.contains('button_alt-active')) {
-          this.event.emit('form:edit', {payment: ''})
-        } else {
-          this.event.emit('form:edit', {payment: button.name})
-        }
+        this.event.emit('form:edit', {payment: button.name})
       })
     })
 
@@ -52,11 +48,10 @@ export class FormOrder extends Form {
    */
   set payment(pay: string) {
     this.formButtonOrder.forEach((button) => {
-      if (button.name === pay) {
-        this.formButton.classList.add('button_alt-active')
-      } else {
-        this.formButton.classList.remove('button_alt-active')
-      }
-    })
+      button.classList.toggle(
+        'button_alt-active',
+        button.name === pay,
+      );
+    });
   }
 }

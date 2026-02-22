@@ -7,7 +7,7 @@ import { IEvents } from "../base/Events";
  */
 export class ProductBasket {
 
-  private _saveProducts: IProduct[] = []
+  private Products: IProduct[] = []
 
   constructor(protected event: IEvents) {}
 
@@ -16,7 +16,7 @@ export class ProductBasket {
    * @param product - товар который нужно доабавить в корзину
    */
   addProduct(product: IProduct): void{
-    this._saveProducts.push(product);
+    this.Products.push(product);
     this.event.emit('basket:change');
   }
 
@@ -26,10 +26,10 @@ export class ProductBasket {
    */
   delProduct(id: string) {
 
-    const index = this._saveProducts.findIndex(item => item.id === id)
+    const index = this.Products.findIndex(item => item.id === id)
 
     if (index !== -1){
-      this._saveProducts.splice(index, 1);
+      this.Products.splice(index, 1);
     }
     
     this.event.emit('basket:change')
@@ -41,14 +41,14 @@ export class ProductBasket {
    * @returns - возвращает количество товаров в корзине 
    */
   countProducts(): number {
-    return this._saveProducts.length
+    return this.Products.length
   }
 
   /**
    * Метод для получения масива товаров находящегося в корзине
    */
-  get products(): IProduct[] {
-    return this._saveProducts
+  getProducts(): IProduct[] {
+    return this.Products
   }
 
 
@@ -57,7 +57,7 @@ export class ProductBasket {
    * @returns - Возвращает сумму стоимости всех товаров в корзине
    */
   getSumProductsPrice(): number {
-    return this._saveProducts.reduce((total: number, item: IProduct) => {
+    return this.Products.reduce((total: number, item: IProduct) => {
       return total + (item.price ?? 0);
     }, 0)
 
@@ -69,7 +69,7 @@ export class ProductBasket {
    * @returns - возвращает true - если товар найден и удален и false если нет
    */
   checkProduct(id: string): boolean {
-    return this._saveProducts.some(item => item.id === id)
+    return this.Products.some(item => item.id === id)
   }
 
   /**
@@ -77,7 +77,7 @@ export class ProductBasket {
    * @returns - Возвращает информационное сообщение об удалении товаров из корзины
    */
   clearBascet(): string {
-    this._saveProducts = []
+    this.Products = []
     this.event.emit('basket:change')
 
     return 'Корзина успешно очищена!'

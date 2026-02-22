@@ -18,7 +18,7 @@ export class Buyer{
   /**
    * Позволяет получить все данные пользователя
    */
-  get shopperData(): IBuyer {
+  getShopperData(): IBuyer {
     return {
       "payment": this.payment,
       "address": this.address,
@@ -59,12 +59,12 @@ export class Buyer{
   /**
    * Удаляет данные пользователя и возвращает к исходному значению
    */
-  clearBuer(): void {
+  clearBuyer(): void {
     this.payment = '';
     this.address = '';
     this.email = '';
     this.phone = '';
-    this.event.emit('form:edit')
+    this.event.emit('buyer:change')
   }
   
   /**

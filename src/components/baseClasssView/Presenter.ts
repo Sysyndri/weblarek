@@ -4,15 +4,9 @@ import {
   PostAnswer,
   ValidationErrors,
 } from "../../types";
-import { cloneTemplate } from "../../utils/utils";
+import { cloneTemplate, createCardBasket, createCardCatalog } from "../../utils/utils";
 import { IEvents } from "../base/Events";
-import { CardBasket } from "../view/CardBasket";
-import { CardCatalog } from "../view/CardCatalog";
 
-/**
- * Класс для связи между всеми классами в приложении.
- * Предоставляет доступ к моделям данных и View классам приложения
- */
 
 interface IApiClient {
   getProductCards(): Promise<IProduct[]>;
@@ -20,21 +14,21 @@ interface IApiClient {
 }
 
 interface IMainCatalog {
-  products: IProduct[];
-  getCard: () => IProduct;
-  setCard: (arg0: IProduct) => void;
-  saveProducts: IProduct[];
+  getProducts(): IProduct[];
+  getCard(): IProduct;
+  setCard(arg0: IProduct): void;
+  setSaveProducts(arg0: IProduct[]): void;
 }
 
 interface IBuyerModel {
-  shopperData: IBuyer;
+  getShopperData(): IBuyer;
   setNewShopperData(data: Partial<IBuyer>): void;
   checkData(): ValidationErrors;
-  clearBuer(): void;
+  clearBuyer(): void;
 }
 
 interface IProductBasket {
-  products: IProduct[];
+  getProducts(): IProduct[];
   addProduct(product: IProduct): void;
   delProduct(id: string): void;
   countProducts(): number;
@@ -74,13 +68,20 @@ interface ICardBasket {
 }
 
 interface IFormOrder {
+  address: string;
   render(data?: any): HTMLElement;
 }
 
 interface IFormContact {
+  phone: string;
+  email: string;
   render(data?: any): HTMLElement;
 }
 
+/**
+ * Класс для связи между всеми классами в приложении.
+ * Предоставляет доступ к моделям данных и View классам приложения
+ */
 export class Presenter {
 
   // В конструкторе инициализируются все модели которые будут использоваться
@@ -120,14 +121,13 @@ export class Presenter {
   }
 
   /**
-   * Главынй метод класса, создается отдельно для наследного класса
-   * Реализует всю логику взаимодействия с классами
+   * Главынй метод класса, реализует всю логику взаимодействия с классами
    */
   initializateEvent(): void {
     // Отрисовка каталога товаров полученных по api
     this.events.on("catalog:change", () => {
-      const cards = this.mainCatalog.products.map((product) => {
-        const card = new CardCatalog(
+      const cards = this.mainCatalog.getProducts().map((product) => {
+        const card = createCardCatalog(
           cloneTemplate(
             document.querySelector("#card-catalog") as HTMLTemplateElement,
           ),
@@ -143,7 +143,6 @@ export class Presenter {
     // Выбор карточки товара
     this.events.on("card:select", (product: IProduct) => {
       this.mainCatalog.setCard(product);
-      this.events.emit("card:save");
     });
 
     // Сохранение выбраной карточки
@@ -180,11 +179,11 @@ export class Presenter {
     // Покупка, удаление из коррзины
     this.events.on("basket:change", () => {
       const counter = this.basket.countProducts();
-      const productsBasket = this.basket.products;
+      const productsBasket = this.basket.getProducts();
 
       const products = productsBasket.map(
         (product: IProduct, index: number) => {
-          const productCard = new CardBasket(
+          const productCard = createCardBasket(
             cloneTemplate(
               document.querySelector("#card-basket") as HTMLTemplateElement,
             ),
@@ -214,7 +213,9 @@ export class Presenter {
 
     // Открытие корзины
     this.events.on("basket:open", () => {
-      this.mainModal.render({ content: this.basketModal.render() });
+      const statusBtn = !Boolean(this.basket.getSumProductsPrice())
+      
+      this.mainModal.render({ content: this.basketModal.render({statusBtn: statusBtn})});
       this.mainModal.open();
     });
 
@@ -225,7 +226,10 @@ export class Presenter {
 
     // Оформление заказа
     this.events.on("order:open", () => {
-      this.mainModal.render({ content: this.formOrder.render() });
+      const { payment, address} = this.buyer.checkData();
+      const errorsOrderForm = { payment, address };
+
+      this.mainModal.render({ content: this.formOrder.render({ erors: errorsOrderForm}) });
     });
 
     // Редактирование формы заказа
@@ -238,29 +242,35 @@ export class Presenter {
       this.mainModal.render({ content: this.formContact.render() });
     });
 
+
     // Изменение данных покупателя
     this.events.on("buyer:change", () => {
-      const errors = this.buyer.checkData();
-      const { payment, address, email, phone } = errors;
+      const { payment, address, email, phone } = this.buyer.checkData();
 
+      // Данные формы order
       const errorsOrderForm = { payment, address };
       const orderButtonStatus = !Object.values(errorsOrderForm).every(
         (err) => err === null,
       );
 
+      const buyer = this.buyer.getShopperData()
+
       const formRender = {
+        payment: buyer.payment,
         erors: errorsOrderForm,
         buttonStatus: orderButtonStatus,
       };
 
       this.formOrder.render(formRender);
 
+      // Данные формы contacts
       const errorsContactForm = { email, phone };
       const contactButtonStatus = !Object.values(errorsContactForm).every(
         (elem) => elem === null,
       );
 
       const contactRender = {
+        ...buyer,
         erors: errorsContactForm,
         buttonStatus: contactButtonStatus,
       };
@@ -274,26 +284,21 @@ export class Presenter {
 
     // Отправка заказа
     this.events.on("contacts:submit", () => {
-      const err = this.buyer.checkData();
-      if (!Object.values(err).every((elem) => elem === null)) {
-        this.mainModal.render({ content: this.formContact.render() });
-      } else {
-        const items = this.basket.products.map(
-          (product: IProduct) => product.id,
-        );
-        const orderInfo = {
-          ...this.buyer.shopperData,
-          total: this.basket.getSumProductsPrice(),
-          items,
-        };
-        
+      const items = this.basket.getProducts().map(
+        (product: IProduct) => product.id,
+      );
+      const orderInfo = {
+        ...this.buyer.getShopperData(),
+        total: this.basket.getSumProductsPrice(),
+        items,
+      };
+      
 
-        this.submitOrder(orderInfo);
-      }
+      this.submitOrder(orderInfo);
     });
 
     // Закрытие модального окна
-    this.events.on("modal:close", () => {
+    this.events.on("modal:newBuy", () => {
       this.mainModal.close();
     });
   }
@@ -306,7 +311,12 @@ export class Presenter {
     try {
       const response: PostAnswer = await this.api.postOrder(orderInfo);
       this.basket.clearBascet();
-      this.buyer.clearBuer();
+      this.buyer.clearBuyer();      
+      
+      this.formOrder.address = '';
+      this.formContact.phone = '';
+      this.formContact.email = '';
+
       this.mainModal.render({
         content: this.success.render({ summa: response.total }),
       });
@@ -321,7 +331,7 @@ export class Presenter {
   async initialize(): Promise<void> {
     try {
       const catalogOfServer: IProduct[] = await this.api.getProductCards();
-      this.mainCatalog.saveProducts = catalogOfServer;
+      this.mainCatalog.setSaveProducts(catalogOfServer);
     } catch (err) {
       console.error("Ошибка при загрузке каталога: ", err);
     }

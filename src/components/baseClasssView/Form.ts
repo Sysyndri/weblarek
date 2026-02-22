@@ -22,7 +22,6 @@ export abstract class Form extends Component<IFormErr & IBuyer> {
    */
   constructor(container: HTMLTemplateElement, protected event: IEvents) {
     super(container);
-
     this.formError = ensureElement<HTMLElement>('.form__errors', this.container);
     this.formButton = ensureElement<HTMLButtonElement>('[type="submit"]', this.container); 
 

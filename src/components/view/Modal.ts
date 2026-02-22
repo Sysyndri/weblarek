@@ -14,7 +14,7 @@ interface IModal {
  */
 export class Modal extends Component<IModal> {
   protected buttonClose: HTMLButtonElement;
-  protected _content: HTMLElement;
+  protected contentModal: HTMLElement;
 
   /**
    * В конструкторе находим все элементы для данного компонента
@@ -32,7 +32,7 @@ export class Modal extends Component<IModal> {
       ".modal__close",
       this.container,
     );
-    this._content = ensureElement<HTMLElement>(
+    this.contentModal = ensureElement<HTMLElement>(
       ".modal__content",
       this.container,
     );
@@ -51,7 +51,7 @@ export class Modal extends Component<IModal> {
    * @param value - Новое значение контента модального окна (HTMLElement) 
    */
   set content(value: HTMLElement) {
-    this._content.replaceChildren(value);
+    this.contentModal.replaceChildren(value);
   }
 
   /**

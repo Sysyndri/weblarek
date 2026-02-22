@@ -35,7 +35,7 @@ export class Success extends Component<TSuccess> {
 
     this.buttonClose.addEventListener("click", (event) => {
       event.preventDefault();
-      this.event.emit("modal:close");
+      this.event.emit("modal:newBuy");
     });
   }
 

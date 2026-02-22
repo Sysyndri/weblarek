@@ -6,23 +6,23 @@ import { IEvents } from "../base/Events";
  */
 export class MainCatalog {
 
-  private _products: IProduct[] = [];
-  private _currentCard: IProduct = this._products[0];
+  private products: IProduct[] = [];
+  private currentCard: IProduct = this.products[0];
 
   constructor(protected event: IEvents) {}
 
   /**
    * Метод для получения массива продуктов
    */
-  get products(): IProduct[] {
-    return this._products;
+  getProducts(): IProduct[] {
+    return this.products;
   }
 
   /**
    * Метод для сохранения нового массива продуктов 
    */
-  set saveProducts(product: IProduct[]) {
-    this._products = product;
+  setSaveProducts(product: IProduct[]) {
+    this.products = product;
     this.event.emit('catalog:change');
   }
 
@@ -31,15 +31,10 @@ export class MainCatalog {
    * @param id - id товара для получения
    * @returns - возвращает карточку товара или информационное сообщение о том, что товар не найден
    */
-  getProduct(id: string): IProduct | string {
+  getProduct(id: string): IProduct {
+    const product = this.products.find((item) => item.id === id)
 
-    for (let item of this._products) {
-      if (item.id === id) {
-        return item as IProduct;
-      }
-    }
-
-    return `Товар с id = ${id} - не найден`
+    return product as IProduct;
 
   }
 
@@ -47,13 +42,14 @@ export class MainCatalog {
    * Метод для получения текущей карточки товара
    */
   getCard(): IProduct {
-    return this._currentCard;
+    return this.currentCard;
   }
 
   /**
    * Метод для сохранения новой текущей карточки товара
    */
   setCard(item: IProduct) {
-    this._currentCard = item;
+    this.currentCard = item;
+    this.event.emit("card:save");
   }
 }

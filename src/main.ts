@@ -48,12 +48,14 @@ const cardModal = new CardModal(
   events,
   cloneTemplate(
     document.querySelector("#card-preview") as HTMLTemplateElement,
-  )
+  ),
     );
 const cardBasket = new CardBasket(
   cloneTemplate(
     document.querySelector("#card-basket") as HTMLTemplateElement,
-  ),
+  ), {
+    onClick: () => events.emit("product:remove")
+  }
 );
 const formOrder = new FormOrder(
   events,

@@ -102,7 +102,7 @@ Presenter - презентер содержит основную логику п
 
 #### Тип TPayment
 Тип для типизации получаемых в интерфейсе IBuyer.payment данных
-`'card' | 'cash' | '' | null`
+`'card' | 'cash' | ''`
 
 #### Тип ApiPostMethods
 Тип для типизации запросов которые может выполнять Api
@@ -146,27 +146,27 @@ Presenter - презентер содержит основную логику п
 Содержит в себе логику работы с карточками на главной странице их сохраение и получение
 
 Поля класса:
-`_products: IProduct[]` - Хранит массив карточек товаров
-`_currentCard: IProduct` - хранит товар, выбранный для подробного отображения
+`products: IProduct[]` - Хранит массив карточек товаров
+`currentCard: IProduct` - хранит товар, выбранный для подробного отображения
 
 Методы класса: 
-`get products: IProduct[]` - получение массива товаров из модели
-`saveProducts(products: IProduct[]): none` - сохранение массива товаров полученного в параметрах метода
+`getProducts: IProduct[]` - получение массива товаров из модели
+`setSaveProducts(products: IProduct[]): none` - сохранение массива товаров полученного в параметрах метода
 `getProduct(id: string): IProduct` - получение одного товара по его id
-`get card: IProduct` - получение товара для подробного отображения
-`set card: IProduct` - сохранение товара для подробного отображения
+`getCard: IProduct` - получение товара для подробного отображения
+`setCard: IProduct` - сохранение товара для подробного отображения
 
 #### Класс ProductBasket
 Содержит в себе логику работы корзины товаров
 
 Поля класса:
-`_saveProducts: IProduct[]` - Хранит массив товаров сохраненых в корзине
+`Products: IProduct[]` - Хранит массив товаров сохраненых в корзине
 
 Методы класса:
 `addProduct(product: IProduct): void` - добавление товара, который был получен в параметре, в массив корзины 
 `delProduct(id: string): string` - удаление товара, полученного в параметре из массива корзины
 `countProducts: number` - получение количества товаров в корзине
-`get products: IProduct[]` - получение массива товаров, которые находятся в корзине
+`getProducts: IProduct[]` - получение массива товаров, которые находятся в корзине
 `sumProtuctsPrice: number` - получение стоимости всех товаров в корзине
 `checkProduct(id: string): boolean` - проверка наличия товара в корзине по его id, полученного в параметр метода
 `clearBascet: string` - очистка корзины
@@ -175,15 +175,15 @@ Presenter - презентер содержит основную логику п
 Содержит в себе логику работы с данными покупателя
 
 Поля класса:
-`_payment: TPayment` - платежная информация покупателя
-`_address: string` - адресс покупателя
-`_email: string` - адресс почты покупателя
-`_phone: string` - номер телефона покупателя
+`payment: TPayment` - платежная информация покупателя
+`address: string` - адресс покупателя
+`email: string` - адресс почты покупателя
+`phone: string` - номер телефона покупателя
 
 Методы класса:
 `checkData: ValidationErrors` - валидация данных
-`get shopperData: IBuyer` - получение всех данных покупателя
-`newShopperData(payment?: TPayment, address?: string, email?: string, phone?: string): void` - Позволяет изменить и сохранить новые данные пользователя
+`getShopperData: IBuyer` - получение всех данных покупателя
+`newShopperData({payment, address, email, phone}: Partial<IBuyer>): void` - Позволяет изменить и сохранить новые данные пользователя
 `clearBuyer: string` - очистка данных покупателя
 
 
@@ -247,31 +247,31 @@ Presenter - презентер содержит основную логику п
 `set buttonStatus(value: boolean)` - Сеттер для установки нового статуса кнопке отправки формы
 
 
-#### Класс Present
+#### Класс Presenter
 Класс для связи между всеми классами в приложении.
 Предоставляет доступ к моделям данных и View классам приложения
 
 Поля класса:
-`events: EventEmitter` - Переменная для отслеживания событий в приложении
-`api: ApiClient` - Переменная для взаимодействием с api приложения
-`mainCatalog: MainCatalog` - Переменная для взаимодействия с моделью данных MainCatalog
-`buyer: Buyer;` - Переменная для взаимодействием с моделью данных Buyer
-`cardModal: CardModal` - Переменная для взаимодействия с классом CardModal
-`header: Header` - Переменная для взаимодействия с классом Header
-`mainGallery: Gallary` - Переменная для взаимодействия с классом Gallary
-`mainModal: Modal` - Переменная для взаимодействия с классом Modal
-`formOrder: FormOrder` - Переменная для взаимодействия с классом FormOrder
-`formContact: FormContact` - Переменная для взаимодействия с классоь FormContact
-`success: Success` - Переменная для взаимодействия с классом Success
-`basket: ProductBasket` - Переменная для взаимодействия с классом ProductBasket
-`basketModal: Basket` - Переменная для взаимодействия с классом Basket
-`cardBasket: CardBasket` - Переменная для взаимодействия с классом CardBasket
+`events: IEvents` - Переменная для отслеживания событий в приложении
+`api: IApiClient` - Переменная для взаимодействием с api приложения
+`mainCatalog: IMainCatalog` - Переменная для взаимодействия с моделью данных MainCatalog
+`buyer: IBuyerModel;` - Переменная для взаимодействием с моделью данных Buyer
+`cardModal: ICardModal` - Переменная для взаимодействия с классом CardModal
+`header: IHeader` - Переменная для взаимодействия с классом Header
+`mainGallery: IGallary` - Переменная для взаимодействия с классом Gallary
+`mainModal: IModal` - Переменная для взаимодействия с классом Modal
+`formOrder: IFormOrder` - Переменная для взаимодействия с классом FormOrder
+`formContact: IFormContact` - Переменная для взаимодействия с классоь FormContact
+`success: ISuccess` - Переменная для взаимодействия с классом Success
+`basket: IProductBasket` - Переменная для взаимодействия с классом ProductBasket
+`basketModal: IBasket` - Переменная для взаимодействия с классом Basket
+`cardBasket: ICardBasket` - Переменная для взаимодействия с классом CardBasket
 
 Конструктор:
 `constructor()` - В конструкторе инициализируются все модели которые будут использоваться и которые можно инициализировать сейчас
 
 Методы класса:
-`abstract  initializateEvent():void` - Главынй метод класса, создается отдельно для наследного класса реализует всю логику взаимодействия с классами
+`initializateEvent():void` - Главынй метод класса, реализует всю логику взаимодействия с классами
 `async submitOrder(orderInfo: any): Promise<void>` - Метод для post обращению к серверу, через api
 `async initialize(): Promise<void>` - Метод для получения, данных для отрисовки. Метод запрашивает данные с сервера при помощи api и сохраняет данные в каталог приложения
 
@@ -392,7 +392,6 @@ Presenter - презентер содержит основную логику п
 Поля класса:
 `formButtonOrder: HTMLButtonElement[]` - Списочный элемент кнопок для выбора card или наличныйй расчет
 `formAddress: HTMLInputElement` - Элемент формы ввода поля address
-`formButtonNext: HTMLButtonElement` - Элемент кнопки формы 
 
 Конструктор: 
 `constructor(protected event: IEvents, container: HTMLTemplateElement)` - В конструкторе находим все элементы для данного компонента и схраняем их в классе
